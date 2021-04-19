@@ -1,0 +1,22 @@
+Resources:
+  myDynamoDBTable: # Logical Id of the resource
+    Type: AWS::DynamoDB::Table
+
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "FOOD NAME"
+          AttributeType: "S"
+        - AttributeName: "SCIENTIFIC NAME"
+          AttributeType: "S"
+
+      KeySchema:
+        - AttributeName: "FOOD NAME" # Partition Key
+          KeyType: "HASH"
+        - AttributeName: "SCIENTIFIC NAME" # Sort Key
+          KeyType: "RANGE"
+
+      TableName: "Food"
+
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
