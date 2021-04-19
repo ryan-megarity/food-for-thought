@@ -1,5 +1,5 @@
-#Food For Thought Project
+# Food For Thought Project
 
-To deploy run
+To deploy run 
 
 serverless deploy
