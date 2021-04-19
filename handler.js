@@ -1,75 +1,55 @@
 "use strict";
 
 const AWS = require("aws-sdk");
+const docClient = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" });
+const csv = require("csvtojson");
+const { addItem, getAllItem } = require("./dao.js");
 
-const docClient = new AWS.DynamoDB.DocumentClient();
+module.exports.s3Trigger = async (event) => {
+  console.log("Incoming Event: ", event);
+  const bucket = event.Records[0].s3.bucket.name;
+  const filename = decodeURIComponent(
+    event.Records[0].s3.object.key.replace(/\+/g, " ")
+  );
+  const message = `File is uploaded in - ${bucket} -> ${filename}`;
+  console.log("foodForThoughtS3TriggerLog: ", message);
+  let S3 = new AWS.S3();
 
-// Function to Create an Item to DB
-module.exports.addItem = async (event) => {
-  try {
-    let table = "Food";
+  if (filename === "generic-food.csv") {
+    console.log("foodForThoughtS3TriggerLog: running database steps");
 
-    let foodName = 'FOOD NAME'
-    let scientificName= 'SCIENTIFIC NAME'
-    let group = 'GROUP'
-    let subgroup = 'SUB GROUP'
-
-    let params = {
-      TableName: table,
-      Item: {
-        'FOOD NAME': foodName,
-        'SCIENTIFIC NAME': scientificName,
-        'GROUP': group,
-        'SUBGROUP': subgroup
-      },
+    const s3Params = {
+      Bucket: bucket,
+      Key: filename,
     };
 
-    let result = await docClient.put(params).promise();
-    if (result) {
-      console.log(">>>>>>>>>", result);
-    }
-
-    console.log("hello world");
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "Go Serverless v1.0! Your function executed successfully!",
-        data: result,
-      }),
+    let data = async () => {
+      // get csv file and create stream
+      const stream = S3.getObject(s3Params).createReadStream();
+      // convert csv file (stream) to JSON format data
+      const json = await csv().fromStream(stream);
+      return json;
     };
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
 
-// Function to getAllItems from DB
-module.exports.getAllItem = async () => {
-  let foodName = 'FOOD NAME'
-  let scientificName= 'SCIENTIFIC NAME'
-  let group = 'GROUP'
-  let subgroup = 'SUB GROUP'
+    let csvData = await data();
+    console.log(csvData);
 
-  let params = {
-    TableName: table,
-    Key: {
-      'FOOD NAME': foodName,
-      'SCIENTIFIC NAME': scientificName,
-    },
-  };
+    csvData.forEach(async (foodObj) => {
+      const tableParams = {
+        TableName: "FoodForThought",
+        Item: {
+          "FOOD NAME": String(foodObj["FOOD NAME"]),
+          "SCIENTIFIC NAME": String(foodObj["SCIENTIFIC NAME"]),
+          GROUP: String(foodObj["GROUP"]),
+          "SUB GROUP": String(foodObj["SUB GROUP"]),
+        },
+      };
 
-  try {
-    let result = await docClient.get(params).promise();
-
-    console.log(result);
-
-    return {
-      body: JSON.stringify({
-        message: "Executed succesfully",
-        data: result,
-      }),
-    };
-  } catch (error) {
-    console.log(error);
+      try {
+        await docClient.put(tableParams).promise();
+      } catch (e) {
+        console.log(e.message);
+      }
+    });
   }
 };

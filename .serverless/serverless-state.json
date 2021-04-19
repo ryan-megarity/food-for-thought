@@ -16,8 +16,23 @@
             "dynamodb:*"
           ],
           "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:*"
+          ],
+          "Resource": "*"
         }
       ],
+      "s3": {
+        "foodForThought": {
+          "name": "foodforthought",
+          "versioningConfiguration": {
+            "Status": "Enabled"
+          }
+        }
+      },
       "stage": "dev",
       "variableSyntax": "\\${([^{}:]+?(?:\\(|:)(?:[^:{}][^{}]*?)?)}",
       "region": "us-east-1",
@@ -95,28 +110,10 @@
               }
             }
           },
-          "AddItemLogGroup": {
+          "FoodForThoughts3TriggerLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/FoodForThought-dev-addItem"
-            }
-          },
-          "GetAllItemLogGroup": {
-            "Type": "AWS::Logs::LogGroup",
-            "Properties": {
-              "LogGroupName": "/aws/lambda/FoodForThought-dev-getAllItem"
-            }
-          },
-          "UpdateItemLogGroup": {
-            "Type": "AWS::Logs::LogGroup",
-            "Properties": {
-              "LogGroupName": "/aws/lambda/FoodForThought-dev-updateItem"
-            }
-          },
-          "DeleteItemLogGroup": {
-            "Type": "AWS::Logs::LogGroup",
-            "Properties": {
-              "LogGroupName": "/aws/lambda/FoodForThought-dev-deleteItem"
+              "LogGroupName": "/aws/lambda/FoodForThought-dev-foodForThoughts3Trigger"
             }
           },
           "IamRoleLambdaExecution": {
@@ -178,6 +175,14 @@
                       },
                       {
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": "sns:Publish",
+                        "Resource": "arn:aws:sns:us-east-1:453098623877:food-for-thought"
                       }
                     ]
                   }
@@ -199,18 +204,18 @@
               }
             }
           },
-          "AddItemLambdaFunction": {
+          "FoodForThoughts3TriggerLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/FoodForThought/dev/1618861801340-2021-04-19T19:50:01.340Z/FoodForThought.zip"
+                "S3Key": "serverless/FoodForThought/dev/1618873533222-2021-04-19T23:05:33.222Z/FoodForThought.zip"
               },
-              "Handler": "handler.addItem",
+              "Handler": "handler.s3Trigger",
               "Runtime": "nodejs12.x",
-              "FunctionName": "FoodForThought-dev-addItem",
+              "FunctionName": "FoodForThought-dev-foodForThoughts3Trigger",
               "MemorySize": 1024,
               "Timeout": 30,
               "Role": {
@@ -221,122 +226,95 @@
               }
             },
             "DependsOn": [
-              "AddItemLogGroup"
+              "FoodForThoughts3TriggerLogGroup"
             ]
           },
-          "GetAllItemLambdaFunction": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "S3Bucket": {
-                  "Ref": "ServerlessDeploymentBucket"
-                },
-                "S3Key": "serverless/FoodForThought/dev/1618861801340-2021-04-19T19:50:01.340Z/FoodForThought.zip"
-              },
-              "Handler": "handler.getAllItem",
-              "Runtime": "nodejs12.x",
-              "FunctionName": "FoodForThought-dev-getAllItem",
-              "MemorySize": 1024,
-              "Timeout": 30,
-              "Role": {
-                "Fn::GetAtt": [
-                  "IamRoleLambdaExecution",
-                  "Arn"
-                ]
-              }
-            },
-            "DependsOn": [
-              "GetAllItemLogGroup"
-            ]
-          },
-          "UpdateItemLambdaFunction": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "S3Bucket": {
-                  "Ref": "ServerlessDeploymentBucket"
-                },
-                "S3Key": "serverless/FoodForThought/dev/1618861801340-2021-04-19T19:50:01.340Z/FoodForThought.zip"
-              },
-              "Handler": "handler.updateItem",
-              "Runtime": "nodejs12.x",
-              "FunctionName": "FoodForThought-dev-updateItem",
-              "MemorySize": 1024,
-              "Timeout": 30,
-              "Role": {
-                "Fn::GetAtt": [
-                  "IamRoleLambdaExecution",
-                  "Arn"
-                ]
-              }
-            },
-            "DependsOn": [
-              "UpdateItemLogGroup"
-            ]
-          },
-          "DeleteItemLambdaFunction": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-              "Code": {
-                "S3Bucket": {
-                  "Ref": "ServerlessDeploymentBucket"
-                },
-                "S3Key": "serverless/FoodForThought/dev/1618861801340-2021-04-19T19:50:01.340Z/FoodForThought.zip"
-              },
-              "Handler": "handler.deleteItem",
-              "Runtime": "nodejs12.x",
-              "FunctionName": "FoodForThought-dev-deleteItem",
-              "MemorySize": 1024,
-              "Timeout": 30,
-              "Role": {
-                "Fn::GetAtt": [
-                  "IamRoleLambdaExecution",
-                  "Arn"
-                ]
-              }
-            },
-            "DependsOn": [
-              "DeleteItemLogGroup"
-            ]
-          },
-          "UpdateItemLambdaVersionidvUmFOlyxwJFKuldijkQuZfHa1R9DvxhVwWs5Swa4": {
+          "FoodForThoughts3TriggerLambdaVersionLTu2XXXAZ2XoPNDELNtr2tPHFLalbXTWBdQVVzbhf8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
-                "Ref": "UpdateItemLambdaFunction"
+                "Ref": "FoodForThoughts3TriggerLambdaFunction"
               },
-              "CodeSha256": "mJk4Ep4qz+nfHcyRRlyCp2eGZCt0BcHnXR6WmkoiS0Q="
+              "CodeSha256": "FOmDW9wrtd+YieExNMVsEPWkoIWxGwYlbUqG9pnLCHc="
             }
           },
-          "AddItemLambdaVersion92rc9hmaqrTqydifDDOb1q3boAHrIhmzFSCVZVm9jDQ": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
+          "FoodForThoughts3TriggerLambdaEvConf": {
+            "Type": "AWS::Lambda::EventInvokeConfig",
             "Properties": {
               "FunctionName": {
-                "Ref": "AddItemLambdaFunction"
+                "Ref": "FoodForThoughts3TriggerLambdaFunction"
               },
-              "CodeSha256": "mJk4Ep4qz+nfHcyRRlyCp2eGZCt0BcHnXR6WmkoiS0Q="
+              "DestinationConfig": {
+                "OnSuccess": {
+                  "Destination": "arn:aws:sns:us-east-1:453098623877:food-for-thought"
+                }
+              },
+              "Qualifier": "$LATEST"
             }
           },
-          "DeleteItemLambdaVersionUQaaK6dH00mxWzNDPaBAZ2KG5Ks8UyfrUdtiQWQj7c": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
+          "S3BucketFoodforthought": {
+            "Type": "AWS::S3::Bucket",
             "Properties": {
-              "FunctionName": {
-                "Ref": "DeleteItemLambdaFunction"
-              },
-              "CodeSha256": "mJk4Ep4qz+nfHcyRRlyCp2eGZCt0BcHnXR6WmkoiS0Q="
-            }
+              "BucketName": "foodforthought",
+              "NotificationConfiguration": {
+                "LambdaConfigurations": [
+                  {
+                    "Event": "s3:ObjectCreated:*",
+                    "Function": {
+                      "Fn::GetAtt": [
+                        "FoodForThoughts3TriggerLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "Filter": {
+                      "S3Key": {
+                        "Rules": [
+                          {
+                            "Name": "prefix",
+                            "Value": "generic-food"
+                          },
+                          {
+                            "Name": "suffix",
+                            "Value": ".csv"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "DependsOn": [
+              "FoodForThoughts3TriggerLambdaPermissionFoodforthoughtS3"
+            ]
           },
-          "GetAllItemLambdaVersionSF7xTAA5A1hWpdiwRbP9SBaFWgofbOHIrB7c5ANTuM": {
-            "Type": "AWS::Lambda::Version",
-            "DeletionPolicy": "Retain",
+          "FoodForThoughts3TriggerLambdaPermissionFoodforthoughtS3": {
+            "Type": "AWS::Lambda::Permission",
             "Properties": {
               "FunctionName": {
-                "Ref": "GetAllItemLambdaFunction"
+                "Fn::GetAtt": [
+                  "FoodForThoughts3TriggerLambdaFunction",
+                  "Arn"
+                ]
               },
-              "CodeSha256": "mJk4Ep4qz+nfHcyRRlyCp2eGZCt0BcHnXR6WmkoiS0Q="
+              "Action": "lambda:InvokeFunction",
+              "Principal": "s3.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":s3:::foodforthought"
+                  ]
+                ]
+              },
+              "SourceAccount": {
+                "Ref": "AWS::AccountId"
+              }
             }
           },
           "myDynamoDBTable": {
@@ -362,7 +340,7 @@
                   "KeyType": "RANGE"
                 }
               ],
-              "TableName": "Food",
+              "TableName": "FoodForThought",
               "ProvisionedThroughput": {
                 "ReadCapacityUnits": 10,
                 "WriteCapacityUnits": 10
@@ -376,28 +354,10 @@
               "Ref": "ServerlessDeploymentBucket"
             }
           },
-          "UpdateItemLambdaFunctionQualifiedArn": {
+          "FoodForThoughts3TriggerLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "UpdateItemLambdaVersionidvUmFOlyxwJFKuldijkQuZfHa1R9DvxhVwWs5Swa4"
-            }
-          },
-          "AddItemLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "AddItemLambdaVersion92rc9hmaqrTqydifDDOb1q3boAHrIhmzFSCVZVm9jDQ"
-            }
-          },
-          "DeleteItemLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "DeleteItemLambdaVersionUQaaK6dH00mxWzNDPaBAZ2KG5Ks8UyfrUdtiQWQj7c"
-            }
-          },
-          "GetAllItemLambdaFunctionQualifiedArn": {
-            "Description": "Current Lambda function version",
-            "Value": {
-              "Ref": "GetAllItemLambdaVersionSF7xTAA5A1hWpdiwRbP9SBaFWgofbOHIrB7c5ANTuM"
+              "Ref": "FoodForThoughts3TriggerLambdaVersionLTu2XXXAZ2XoPNDELNtr2tPHFLalbXTWBdQVVzbhf8"
             }
           }
         }
@@ -488,49 +448,34 @@
     },
     "pluginsData": {},
     "functions": {
-      "addItem": {
-        "handler": "handler.addItem",
-        "events": [],
-        "name": "FoodForThought-dev-addItem",
+      "foodForThoughts3Trigger": {
+        "handler": "handler.s3Trigger",
+        "events": [
+          {
+            "s3": {
+              "bucket": "foodforthought",
+              "event": "s3:ObjectCreated:*",
+              "rules": [
+                {
+                  "prefix": "generic-food"
+                },
+                {
+                  "suffix": ".csv"
+                }
+              ]
+            }
+          }
+        ],
+        "destinations": {
+          "onSuccess": "arn:aws:sns:us-east-1:453098623877:food-for-thought"
+        },
+        "name": "FoodForThought-dev-foodForThoughts3Trigger",
         "package": {},
         "memory": 1024,
         "timeout": 30,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "AddItemLambdaVersion92rc9hmaqrTqydifDDOb1q3boAHrIhmzFSCVZVm9jDQ"
-      },
-      "getAllItem": {
-        "handler": "handler.getAllItem",
-        "events": [],
-        "name": "FoodForThought-dev-getAllItem",
-        "package": {},
-        "memory": 1024,
-        "timeout": 30,
-        "runtime": "nodejs12.x",
-        "vpc": {},
-        "versionLogicalId": "GetAllItemLambdaVersionSF7xTAA5A1hWpdiwRbP9SBaFWgofbOHIrB7c5ANTuM"
-      },
-      "updateItem": {
-        "handler": "handler.updateItem",
-        "events": [],
-        "name": "FoodForThought-dev-updateItem",
-        "package": {},
-        "memory": 1024,
-        "timeout": 30,
-        "runtime": "nodejs12.x",
-        "vpc": {},
-        "versionLogicalId": "UpdateItemLambdaVersionidvUmFOlyxwJFKuldijkQuZfHa1R9DvxhVwWs5Swa4"
-      },
-      "deleteItem": {
-        "handler": "handler.deleteItem",
-        "events": [],
-        "name": "FoodForThought-dev-deleteItem",
-        "package": {},
-        "memory": 1024,
-        "timeout": 30,
-        "runtime": "nodejs12.x",
-        "vpc": {},
-        "versionLogicalId": "DeleteItemLambdaVersionUQaaK6dH00mxWzNDPaBAZ2KG5Ks8UyfrUdtiQWQj7c"
+        "versionLogicalId": "FoodForThoughts3TriggerLambdaVersionLTu2XXXAZ2XoPNDELNtr2tPHFLalbXTWBdQVVzbhf8"
       }
     },
     "resources": {
@@ -558,7 +503,7 @@
                 "KeyType": "RANGE"
               }
             ],
-            "TableName": "Food",
+            "TableName": "FoodForThought",
             "ProvisionedThroughput": {
               "ReadCapacityUnits": 10,
               "WriteCapacityUnits": 10
@@ -589,7 +534,7 @@
     "artifact": "C:\\CodeProjects\\FoodForThought\\.serverless\\FoodForThought.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/FoodForThought/dev/1618861801340-2021-04-19T19:50:01.340Z",
+    "artifactDirectoryName": "serverless/FoodForThought/dev/1618873533222-2021-04-19T23:05:33.222Z",
     "artifact": "FoodForThought.zip"
   }
 }

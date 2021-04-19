@@ -15,7 +15,7 @@ Resources:
         - AttributeName: "SCIENTIFIC NAME" # Sort Key
           KeyType: "RANGE"
 
-      TableName: "Food"
+      TableName: "FoodForThought"
 
       ProvisionedThroughput:
         ReadCapacityUnits: 10

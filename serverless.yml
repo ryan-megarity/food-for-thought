@@ -11,19 +11,30 @@ provider:
       Action:
         - "dynamodb:*"
       Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: "*"
+
+  s3:
+    foodForThought:
+      name: foodforthought
+      versioningConfiguration:
+        Status: Enabled
 
 functions:
-  addItem:
-    handler: handler.addItem
+  foodForThoughts3Trigger:
+    handler: handler.s3Trigger
+    events:
+      - s3:
+          bucket: foodforthought
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: generic-food
+            - suffix: .csv
+    destinations:
+      onSuccess: arn:aws:sns:us-east-1:453098623877:food-for-thought
 
-  getAllItem:
-    handler: handler.getAllItem
-
-  updateItem:
-    handler: handler.updateItem
-
-  deleteItem:
-    handler: handler.deleteItem
 
 resources:
   - ${file(resources/dynamo-table.yml)}
