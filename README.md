@@ -12,4 +12,4 @@ Provisioned an S3 bucket and DynamoDB using serverless\
 Created a trigger that runs a lambda function whenever anything is added to the bucket\
 If the file added is called 'generic-food.csv' then it writes the contents to the database\
 This project has been created with the idea of being easily replicable\
-The next steps would be to create an AppSync API to interogate the database\
+The next steps would be to create an AppSync API to interogate the database
