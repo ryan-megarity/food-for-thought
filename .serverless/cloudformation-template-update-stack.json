@@ -180,7 +180,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/FoodForThought/dev/1618873533222-2021-04-19T23:05:33.222Z/FoodForThought.zip"
+          "S3Key": "serverless/FoodForThought/dev/1618963663217-2021-04-21T00:07:43.217Z/FoodForThought.zip"
         },
         "Handler": "handler.s3Trigger",
         "Runtime": "nodejs12.x",
@@ -198,14 +198,14 @@
         "FoodForThoughts3TriggerLogGroup"
       ]
     },
-    "FoodForThoughts3TriggerLambdaVersionLTu2XXXAZ2XoPNDELNtr2tPHFLalbXTWBdQVVzbhf8": {
+    "FoodForThoughts3TriggerLambdaVersioniLGMXC6CwkgBmhHjMvbIOz6cvqGj0x0X7f1wsA7I": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "FoodForThoughts3TriggerLambdaFunction"
         },
-        "CodeSha256": "FOmDW9wrtd+YieExNMVsEPWkoIWxGwYlbUqG9pnLCHc="
+        "CodeSha256": "6V/uaRxkrgXbLqfz6Dc/waRDVzTqwodJT0bRpOLXSvs="
       }
     },
     "FoodForThoughts3TriggerLambdaEvConf": {
@@ -293,20 +293,12 @@
           {
             "AttributeName": "FOOD NAME",
             "AttributeType": "S"
-          },
-          {
-            "AttributeName": "SCIENTIFIC NAME",
-            "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
             "AttributeName": "FOOD NAME",
             "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "SCIENTIFIC NAME",
-            "KeyType": "RANGE"
           }
         ],
         "TableName": "FoodForThought",
@@ -326,7 +318,7 @@
     "FoodForThoughts3TriggerLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "FoodForThoughts3TriggerLambdaVersionLTu2XXXAZ2XoPNDELNtr2tPHFLalbXTWBdQVVzbhf8"
+        "Ref": "FoodForThoughts3TriggerLambdaVersioniLGMXC6CwkgBmhHjMvbIOz6cvqGj0x0X7f1wsA7I"
       }
     }
   }

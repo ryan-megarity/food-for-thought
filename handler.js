@@ -1,9 +1,10 @@
 "use strict";
 
 const AWS = require("aws-sdk");
-const docClient = new AWS.DynamoDB.DocumentClient({ region: "us-east-1" });
+const docClient = new AWS.DynamoDB.DocumentClient({
+  region: "us-east-1",
+});
 const csv = require("csvtojson");
-const { addItem, getAllItem } = require("./dao.js");
 
 module.exports.s3Trigger = async (event) => {
   console.log("Incoming Event: ", event);
@@ -34,22 +35,23 @@ module.exports.s3Trigger = async (event) => {
     let csvData = await data();
     console.log(csvData);
 
-    csvData.forEach(async (foodObj) => {
-      const tableParams = {
-        TableName: "FoodForThought",
-        Item: {
-          "FOOD NAME": String(foodObj["FOOD NAME"]),
-          "SCIENTIFIC NAME": String(foodObj["SCIENTIFIC NAME"]),
-          GROUP: String(foodObj["GROUP"]),
-          "SUB GROUP": String(foodObj["SUB GROUP"]),
-        },
-      };
-
-      try {
-        await docClient.put(tableParams).promise();
-      } catch (e) {
-        console.log(e.message);
-      }
-    });
+    const results = await Promise.all(
+      csvData.map(async (foodObj) => {
+        const tableParams = {
+          TableName: "FoodForThought",
+          Item: {
+            "FOOD NAME": String(foodObj["FOOD NAME"]),
+            "SCIENTIFIC NAME": String(foodObj["SCIENTIFIC NAME"]),
+            "GROUP": String(foodObj["GROUP"]),
+            "SUB GROUP": String(foodObj["SUB GROUP"]),
+          },
+        };
+        return await docClient
+          .put(tableParams)
+          .promise()
+          .catch((e) => console.log("failed to insert, error: ", e));
+      })
+    );
+    console.log("database write complete, results: ", results)
   }
 };

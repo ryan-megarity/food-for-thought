@@ -6,14 +6,10 @@ Resources:
       AttributeDefinitions:
         - AttributeName: "FOOD NAME"
           AttributeType: "S"
-        - AttributeName: "SCIENTIFIC NAME"
-          AttributeType: "S"
 
       KeySchema:
         - AttributeName: "FOOD NAME" # Partition Key
           KeyType: "HASH"
-        - AttributeName: "SCIENTIFIC NAME" # Sort Key
-          KeyType: "RANGE"
 
       TableName: "FoodForThought"
 
