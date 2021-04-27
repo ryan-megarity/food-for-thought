@@ -38,12 +38,12 @@ module.exports.s3Trigger = async (event) => {
     const results = await Promise.all(
       csvData.map(async (foodObj) => {
         const tableParams = {
-          TableName: "FoodForThought",
+          TableName: "FoodForThought2",
           Item: {
-            "FOOD NAME": String(foodObj["FOOD NAME"]),
-            "SCIENTIFIC NAME": String(foodObj["SCIENTIFIC NAME"]),
-            "GROUP": String(foodObj["GROUP"]),
-            "SUB GROUP": String(foodObj["SUB GROUP"]),
+            "FoodName": String(foodObj["FOOD NAME"]),
+            "ScientificName": String(foodObj["SCIENTIFIC NAME"]),
+            "Group": String(foodObj["GROUP"]),
+            "SubGroup": String(foodObj["SUB GROUP"]),
           },
         };
         return await docClient

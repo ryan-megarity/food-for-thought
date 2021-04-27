@@ -17,8 +17,8 @@ provider:
       Resource: "*"
 
   s3:
-    foodForThought:
-      name: foodforthought
+    foodForThought2:
+      name: foodforthought2
       versioningConfiguration:
         Status: Enabled
 
@@ -27,7 +27,7 @@ functions:
     handler: handler.s3Trigger
     events:
       - s3:
-          bucket: foodforthought
+          bucket: foodforthought2
           event: s3:ObjectCreated:*
           rules:
             - prefix: generic-food
